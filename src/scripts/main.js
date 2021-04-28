@@ -9,15 +9,16 @@ const cart = new Cart();
 const addToCart = btn => {
   btn.addEventListener('click', (e) => {
     const card = e.currentTarget.parentElement.parentElement;
+    const id = card.dataset['productId'];
     const title = card.querySelector('.card-title').textContent;
     const price = parseFloat(card.querySelector('.price')
                                           .textContent
                                           .replace('$',''));
 
-    const item = new CartItem({ title, price });  
+    const item = new CartItem({ id, title, price });  
     cart.add(item);           
-    // alert(`${title}: ${itemPrice}`);
-    // console.log(item);
+
+    
   });
 }
 
