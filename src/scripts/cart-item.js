@@ -8,6 +8,10 @@ class CartItem{
     this.quantity = quantity;
   }
 
+  totalPrice(){
+    return this.price * this.quantity;
+  }
+
   increment(n = 1){
     this.quantity += n;
   }

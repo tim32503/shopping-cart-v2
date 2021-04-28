@@ -3,6 +3,10 @@ class Cart{
     this.items = items;
   }
 
+  empty(){
+    this.items = [];
+  }
+
   add(item){
     const foundItem = this.items.find(t => t.id == item.id);
 
@@ -13,6 +17,17 @@ class Cart{
     }
     
     console.log(this.items);
+  }
+
+  totalPrice(){
+    // let total = 0;
+
+    // this.items.forEach(item => {
+    //   total += item.totalPrice();
+    // });
+
+    // return total;
+    return Math.round(this.items.reduce((total, currentItem) => total + currentItem.totalPrice(), 0)) * 100 / 100;
   }
 }
 

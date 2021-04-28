@@ -2,8 +2,17 @@ import 'bootstrap/dist/css/bootstrap.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import Cart from './cart'
 import CartItem from './cart-item'
+import { buildItemList } from './ui'
 
 const cart = new Cart();
+
+// Function-渲染畫面
+const renderUI = () => {
+  const result = buildItemList(cart);
+  document.querySelector('.cart tbody').innerHTML = result;
+
+  document.querySelector('.cart .total-price').textContent = '$' + cart.totalPrice();
+}
 
 // Callback Function-加入購物車
 const addToCart = btn => {
@@ -18,7 +27,8 @@ const addToCart = btn => {
     const item = new CartItem({ id, title, price });  
     cart.add(item);           
 
-    
+    renderUI();
+    // console.log(result);
   });
 }
 
@@ -40,3 +50,8 @@ document.querySelectorAll('.card .btn').forEach(addToCart);
 // 購物車-刪除按鈕
 document.querySelectorAll('.remove-item-btn').forEach(deleteCartItem);
 
+// 購物車-清空購物車按鈕
+document.querySelector('.empty-cart').addEventListener('click', () => {
+  cart.empty();
+  renderUI();
+});
