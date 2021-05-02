@@ -1,57 +1,58 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import Cart from './cart'
-import CartItem from './cart-item'
-import { buildItemList } from './ui'
+import CartItem from './cartItem'
 
-const cart = new Cart();
+const cart = new Cart()
 
-// Function-渲染畫面
-const renderUI = () => {
-  const result = buildItemList(cart);
-  document.querySelector('.cart tbody').innerHTML = result;
-
-  document.querySelector('.cart .total-price').textContent = '$' + cart.totalPrice();
-}
-
-// Callback Function-加入購物車
-const addToCart = btn => {
+const addItem = btn => {
   btn.addEventListener('click', (e) => {
-    const card = e.currentTarget.parentElement.parentElement;
-    const id = card.dataset['productId'];
-    const title = card.querySelector('.card-title').textContent;
-    const price = parseFloat(card.querySelector('.price')
-                                          .textContent
-                                          .replace('$',''));
-
-    const item = new CartItem({ id, title, price });  
-    cart.add(item);           
-
-    renderUI();
-    // console.log(result);
-  });
+    const card = e.currentTarget.parentElement.parentElement
+    const id = card.dataset['productId']
+    const title = card.querySelector('.card-title').textContent
+    const price = parseFloat(card.querySelector('.price').textContent.replace('$', ''))
+    const item = new CartItem({id, title, price})
+    
+    cart.add(item)
+  })
 }
 
-// Callback Function-刪除購物車品項 & 重新計算總價
-const deleteCartItem = btn => {
-  btn.addEventListener('click', (e) => {
-    e.target.parentElement.parentElement.parentElement.remove();
-
-    // 抓取各品項小計
-    document.querySelectorAll('.cart-item-table tbody tr td:nth-child(4)').forEach(
-      el => console.log(el.textContent)
-    )
-  });
+const updateItem = event => {
+  if(event.target.tagName === 'INPUT'){
+    const itemId = event.target.parentElement.parentElement.dataset['productId']
+    const item = cart.find(itemId)
+    item.update(event.target.value)
+    cart.refresh()
+  }
 }
 
-// 購物車-購物按鈕
-document.querySelectorAll('.card .btn').forEach(addToCart);
+const removeItem = event => {
+  const tagName = event.target.tagName
+  let itemId;
+  if(tagName === 'BUTTON'){
+    itemId = event.target.parentElement.parentElement.dataset['productId']
+  }else if(tagName === 'I'){
+    itemId = event.target.parentElement.parentElement.parentElement.dataset['productId']
+  }
 
-// 購物車-刪除按鈕
-document.querySelectorAll('.remove-item-btn').forEach(deleteCartItem);
+  if(itemId != undefined){
+    cart.remove(itemId)
+  }
+}
 
-// 購物車-清空購物車按鈕
-document.querySelector('.empty-cart').addEventListener('click', () => {
-  cart.empty();
-  renderUI();
-});
+const removeCart = () => {
+  cart.removeAll()
+  cart.refresh()
+}
+
+// 商品列表-商品購買按鈕
+document.querySelectorAll('.card .btn').forEach(addItem)
+
+// 購物車-更新商品數量
+document.querySelector('.cart-item-table tbody').addEventListener('change', updateItem)
+
+// 購物車-刪除指定商品
+document.querySelector('.cart-item-table tbody').addEventListener('click', removeItem)
+
+// 購物車-清空購物車
+document.querySelector('.empty-cart').addEventListener('click', removeCart)

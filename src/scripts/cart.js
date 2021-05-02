@@ -1,33 +1,53 @@
-class Cart{
-  constructor(items = []){
-    this.items = items;
-  }
+import Render from './render'
 
-  empty(){
-    this.items = [];
+class Cart{
+  constructor(){
+    this.itemList = []
   }
 
   add(item){
-    const foundItem = this.items.find(t => t.id == item.id);
+    const existedItem = this.find(item.id)
 
-    if (foundItem){
-      foundItem.increment();
+    if(existedItem){
+      existedItem.increase()
     }else{
-      this.items.push(item);
+      this.itemList.push(item)
+      Render.createCartItem(item)
     }
-    
-    console.log(this.items);
+
+    this.refresh()
   }
 
-  totalPrice(){
-    // let total = 0;
+  remove(itemId){
+    this.itemList = this.itemList.filter(item => item.id != itemId)
+    Render.removeCartItem(itemId)
+    this.refresh()
+  }
 
-    // this.items.forEach(item => {
-    //   total += item.totalPrice();
-    // });
+  removeAll(){
+    this.itemList = []
+    Render.removeCart()
+    console.log(this.itemList);
+    console.log(this.totalPrice);
+  }
 
-    // return total;
-    return Math.round(this.items.reduce((total, currentItem) => total + currentItem.totalPrice(), 0)) * 100 / 100;
+  find(itemId){
+    return this.itemList.find(i => i.id === itemId)
+  }
+
+  refresh(){
+    this.itemList.forEach(item => {
+      Render.updateCartItem(item)
+    })
+    Render.updateCartTotal(this.totalPrice)
+  }
+
+  get totalPrice(){
+    if (this.itemList.length <= 0){
+      return 0
+    }
+
+    return Math.round(this.itemList.map(item => item.subtotal).reduce((accumulator, currentValue) => accumulator + currentValue) * 100) / 100
   }
 }
 
